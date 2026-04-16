@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include "scanner.h"
 
 uint16_t parse_port(const char *arg) {
 	char *endptr;
