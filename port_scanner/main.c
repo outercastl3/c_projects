@@ -23,29 +23,39 @@ uint16_t parse_port(const char *arg) {
 int main(int argc, char* argv[]) {
 	uint16_t range_start = 0;
 	uint16_t range_end = 0;
-	char opt;
-	int s_flag = 0, e_flag = 0;
+	char *ip = NULL;
+	int opt;
+	int s_flag = 0, e_flag = 0, i_flag = 0;
 
 
-	while ((opt = getopt(argc, argv,"s:e:")) != -1) {
+	while ((opt = getopt(argc, argv,"s:e:i:")) != -1) {
 		switch (opt) {
 			case 's':
-				printf("here is your start %s\n", optarg);
 				range_start = parse_port(optarg);
 				s_flag = 1;
 				break;
 			case 'e': 	
-				printf("here is your end %s\n", optarg);
 				range_end = parse_port(optarg);
 				e_flag = 1;
+				break;
+			case 'i':
+				ip = optarg;
+				i_flag = 1;
 				break;
 		}
 	}
 	printf("Your range start %u\n", (unsigned int)range_start);
 	printf("Your range end %u\n", (unsigned int)range_end);
-	if (!s_flag || !e_flag) {
-		fprintf(stderr, "Both start flag -s and end flag -s should be provided/n");
+	if (!s_flag || !e_flag || !i_flag) {
+		fprintf(stderr, "Usage: %s -s <start> -e <end> -i <ip>\n", argv[0]);
 		exit(EXIT_FAILURE);
 	}
+
+	if (range_start > range_end) {
+		uint16_t tmp = range_start;
+		range_start = range_end;
+		range_end = tmp;
+	}
+	scan_ports(ip,range_start, range_end);
 	return 0;
-}			
+}	
