@@ -39,7 +39,7 @@ void scan_ports(const char *ip, int start_port, int end_port) {
 			} else if (err == ETIMEDOUT) {
 				printf("Port %d is FILTERED (timeout)\n", port);
 			} else {
-				printf("Port %d error: %s\n", port, strerror(errno));
+				printf("Port %d error: %s\n", port, strerror(err));
 			}
 		}
 		close(sock);
