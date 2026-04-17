@@ -7,10 +7,10 @@ Uses CLI interface and tries to establish TCP connection with the range of ports
 
 ## Usability 
 The binary should be executed in such way
-./port_scanner [ip_addr] -s [start of port range] -e [end of port range]
+./port_scanner -i [ip_addr] -s [start of port range] -e [end of port range]
 
 ## Usage Example
-./port_scanner 192.168.1.1 -s 1 -e 9999
+./port_scanner -i 192.168.1.1 -s 1 -e 9999
 
 ## Author
 Bogdan Ermakov
