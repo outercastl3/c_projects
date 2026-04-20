@@ -36,7 +36,7 @@ void scan_ports(const char *ip, uint16_t start_port, uint16_t end_port) {
                 return;
         }
 
-        for (uint16_t port = start_port; port <= end_port; port++) {
+        for (int port = (int)start_port; port <= (int)end_port; port++) {
                 int result = singularScan(port,addr); 
 
                 if (result == 0) {
