@@ -8,6 +8,11 @@
 #include <errno.h>
 #include <arpa/inet.h>
 
+typedef struct {
+	uint16_t port;
+	int status;
+} PortResult;
+
 int singularScan (uint16_t port, struct sockaddr_in addr) {
 
         int sock = socket(AF_INET, SOCK_STREAM, 0);
@@ -25,7 +30,7 @@ int singularScan (uint16_t port, struct sockaddr_in addr) {
         return (conn == 0) ? 0 : err;
 }
 
-void scan_ports(const char *ip, uint16_t start_port, uint16_t end_port) {
+PortResult* scan_ports(const char *ip, uint16_t start_port, uint16_t end_port, int *out_count) {
         printf("Scanning ports from %u to %u from IP: %s\n", start_port,end_port,ip);
         struct sockaddr_in addr;
         memset(&addr, 0, sizeof(addr));
@@ -33,21 +38,22 @@ void scan_ports(const char *ip, uint16_t start_port, uint16_t end_port) {
 
         if (inet_pton(AF_INET, ip, &addr.sin_addr) <= 0) {
                 perror("inet_pton failed");
-                return;
+                return NULL;
         }
+	
+	int range = (int)end_port - (int)start_port + 1;
+	PortResult *results = malloc(sizeof(PortResult) * range);
+	if (!results) {
+		perror("malloc failed");
+		return NULL;
+	}
 
         for (int port = (int)start_port; port <= (int)end_port; port++) {
-                int result = singularScan(port,addr); 
-
-                if (result == 0) {
-                        printf("Port %u is open\n", port);
-                } else if (result == ECONNREFUSED) {
-			printf("Port %u is CLOSED\n", port);
-                } else if (result == ETIMEDOUT) {         
-			printf("Port %u is FILTERED (timeout)\n", port);
-                } else {
-			printf("Port %u error: %s\n", port, strerror(result));
-		}
-                };
-        }
-
+		int idx = port - (int)start_port;
+		
+		results[idx].port = (uint16_t)port;
+		results[idx].status = singularScan(port, addr);
+	}
+	*out_count = range;
+	return results;
+}
