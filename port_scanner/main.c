@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
 #include <stdint.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -44,8 +46,7 @@ int main(int argc, char* argv[]) {
 				break;
 		}
 	}
-	printf("Your range start %u\n", (unsigned int)range_start);
-	printf("Your range end %u\n", (unsigned int)range_end);
+	
 	if (!s_flag || !e_flag || !i_flag) {
 		fprintf(stderr, "Usage: %s -s <start> -e <end> -i <ip>\n", argv[0]);
 		exit(EXIT_FAILURE);
@@ -56,6 +57,24 @@ int main(int argc, char* argv[]) {
 		range_start = range_end;
 		range_end = tmp;
 	}
-	scan_ports(ip,range_start, range_end);
-	return 0;
-}	
+
+	int count = 0;
+	PortResult *results = scan_ports(ip, range_start, range_end, &count);
+	if (results) {
+		for (int i = 0; i < count; i++) {
+			uint16_t port = results[i].port;
+			int status = results[i].status;
+
+			if (status == 0) {
+				printf("Port %u is open\n", port);
+			} else if (status == ECONNREFUSED) {
+				printf("Port %u is closed\n", port);
+			} else if (status == ETIMEDOUT) {
+				printf("Port %u is filtered\n", port);
+			} else {
+				printf("Port %u error: %s\n", port, strerror(status));
+			}
+		}
+		free(results);
+	}
+}
