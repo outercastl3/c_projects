@@ -20,7 +20,9 @@ int singularScan (uint16_t port, struct sockaddr_in addr) {
                 perror("socket failed");
         	return errno;
 	}
-
+	struct timeval tv = { .tv_sec = 1, .tv_usec = 0 };
+	setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
+	
         addr.sin_port = htons(port);
         int conn = connect(sock, (struct sockaddr*)&addr, sizeof(addr));
 	int err = errno;
