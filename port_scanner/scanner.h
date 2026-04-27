@@ -1,5 +1,6 @@
 #ifndef SCANNER_H
 #define SCANNER_H
+#include <pthread.h>
 #include <stdint.h>
 typedef struct {
 	uint16_t port;
