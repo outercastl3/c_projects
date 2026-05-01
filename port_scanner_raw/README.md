@@ -7,7 +7,7 @@ Returns following information:
 
 # Usability
 execute binary in such manner:
-./port_scanner_raw -i [ip_addr] -s [start of port range] -e [end of port range]
+./scanner_raw -i [ip_addr] -s [start of port range] -e [end of port range]
 
 ## Usage example
 - root priviledges are require to use this scanner
